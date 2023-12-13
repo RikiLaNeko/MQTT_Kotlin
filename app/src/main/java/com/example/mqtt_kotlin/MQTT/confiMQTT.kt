@@ -1,4 +1,4 @@
-package com.example.mqtt_kotlin
+package com.example.mqtt_kotlin.MQTT
 
 import java.util.UUID
 

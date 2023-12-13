@@ -1,4 +1,4 @@
-package com.example.mqtt_kotlin
+package com.example.mqtt_kotlin.MQTT
 import com.hivemq.client.mqtt.MqttClient
 import com.hivemq.client.mqtt.datatypes.MqttQos
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient
