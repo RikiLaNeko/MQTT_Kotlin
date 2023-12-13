@@ -4,7 +4,7 @@
     <data>
         <variable
                 name="monBinding"
-                type="com.example.mqtt_kotlin.modele"/>
+                type="com.example.mqtt_kotlin.Model"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -13,7 +13,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{monBinding.temperature"
+                android:text="@{monBinding.temperature}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

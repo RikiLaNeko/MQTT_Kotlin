@@ -1,4 +1,6 @@
 package com.example.mqtt_kotlin.MQTT
+import com.example.mqtt_kotlin.MainActivity
+import com.example.mqtt_kotlin.Model
 import com.hivemq.client.mqtt.MqttClient
 import com.hivemq.client.mqtt.datatypes.MqttQos
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient
@@ -11,6 +13,11 @@ import java.util.function.BiConsumer
 class HiveMQ {
     private var client: Mqtt3AsyncClient? = null
     private var connectOk = false
+    private lateinit var main: MainActivity
+
+    constructor(mainActivity: MainActivity){
+        main = mainActivity
+    }
 
     init {
         start()
@@ -28,33 +35,32 @@ class HiveMQ {
     private fun connect(){
         client!!.connectWith()
             .willPublish()
-            .topic(TOPIC)
-            .payload("capteur ref: $CLIENT_ID hs".encodeToByteArray())
+            .topic(main.binding.editTextText.text.toString())
+            .payload("capteur ref: $CLIENT_ID hs".toByteArray())
             .qos(MqttQos.EXACTLY_ONCE)
             .retain(true)
             .applyWillPublish()
             .send()
-            .whenComplete(BiConsumer<Mqtt3ConnAck, Throwable> { mqtt3ConnAck: Mqtt3ConnAck?, throwable: Throwable? ->
+            .whenComplete{ mqtt3ConnAck, throwable ->
                 if (throwable != null) println("échec connection")
                 else {
                     println("connexion OK")
                     connectOk = true
                 }
-            })
+            }
 
     }
 
     fun subscribe() {
         client!!.subscribeWith()
-            .topicFilter(TOPIC)
+            .topicFilter(main.binding.editTextText.text.toString())
             .qos(MqttQos.EXACTLY_ONCE)
-            .callback { mqtt3Publish: Mqtt3Publish ->
+            .callback { Mqtt3Publish ->
                 //Reception
-                val value = String(mqtt3Publish.payloadAsBytes)
-                println(value)
+                main.binding.monBinding = Model(Mqtt3Publish.toString())
             }
             .send()
-            .whenComplete { mqtt3SubAck: Mqtt3SubAck?, throwable: Throwable? ->
+            .whenComplete { mqtt3SubAck, throwable ->
                 if (throwable != null) println("MQTT souscription erreur!")
                 else {
                     System.out.println("MQTT souscription Ok -> $SERVER_URL:$SERVER_PORT")
@@ -62,20 +68,9 @@ class HiveMQ {
             }
     }
 
-    fun publish(message: String) {
-        if (connectOk) {
-            client!!.publishWith()
-                .topic(TOPIC)
-                .payload(message.toByteArray())
-                .qos(MqttQos.EXACTLY_ONCE)
-                .send()
-                .whenComplete { mqtt3Publish: Mqtt3Publish?, throwable: Throwable? ->
-                    if (throwable != null) {
-                        println("échec de la configuration de la publication")
-                    } else {
-                        System.out.println("publication ok -> $SERVER_URL:$SERVER_PORT")
-                    }
-                }
-        }
+    fun unsubscribe(){
+        client!!.unsubscribeWith()
+            .topicFilter(main.binding.editTextText.text.toString())
+            .send()
     }
 }
